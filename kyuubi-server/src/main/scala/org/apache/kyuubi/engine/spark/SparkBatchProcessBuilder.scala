@@ -46,6 +46,7 @@ class SparkBatchProcessBuilder(
 
     val batchKyuubiConf = new KyuubiConf(false)
     // complete `spark.master` if absent on kubernetes
+    logger.warn("Start to complete masterUrl of SparkBatchProcessBuilder.")
     completeMasterUrl(batchKyuubiConf)
     batchConf.foreach(entry => { batchKyuubiConf.set(entry._1, entry._2) })
     // tag batch application

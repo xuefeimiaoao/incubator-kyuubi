@@ -64,6 +64,9 @@ class SparkProcessBuilder(
    */
   override protected def completeMasterUrl(conf: KyuubiConf): Unit = {
     try {
+      logger.warn(s"Before complete masterUrl, clusterManager is: ${clusterManager()}, " +
+        s"KUBERNETES_SERVICE_HOST is ${sys.env.get(KUBERNETES_SERVICE_HOST)}" +
+        s"KUBERNETES_SERVICE_PORT is ${sys.env.get(KUBERNETES_SERVICE_PORT)}")
       (
         clusterManager(),
         sys.env.get(KUBERNETES_SERVICE_HOST),
@@ -76,6 +79,9 @@ class SparkProcessBuilder(
           conf.set(MASTER_KEY, masterURL)
         case _ =>
       }
+      logger.warn(s"After complete masterUrl, clusterManager is: ${clusterManager()}, " +
+        s"KUBERNETES_SERVICE_HOST is ${sys.env.get(KUBERNETES_SERVICE_HOST)}" +
+        s"KUBERNETES_SERVICE_PORT is ${sys.env.get(KUBERNETES_SERVICE_PORT)}")
     } catch {
       case e: Exception =>
         warn("Failed when setting up spark.master with kubernetes environment automatically.", e)
@@ -100,6 +106,7 @@ class SparkProcessBuilder(
 
   override protected val commands: Array[String] = {
     // complete `spark.master` if absent on kubernetes
+    logger.warn("Start to complete masterUrl of SparkProcessBuilder.")
     completeMasterUrl(conf)
 
     KyuubiApplicationManager.tagApplication(engineRefId, shortName, clusterManager(), conf)
